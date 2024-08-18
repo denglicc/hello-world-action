@@ -1,26 +1,16 @@
 # action.yml
-name: 'Hello new branch!'
-description: 'Make a branch'
-branding:
-  icon: 'database'
-  color: 'orange'
-inputs:
-  database_name:  # id of input
-    description: 'The name of the database'
-    required: true
-  branch_name:
-    description: 'The name of the new branch'
-    required: true
-  org_name:
-    description: 'The name of the organization that owns the database'
-    required: true
-# outputs:
-#   time: # id of output
-#     description: 'The time we greeted you'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.database_name }}
-    - ${{ inputs.branch_name }}
-    - ${{ inputs.org_name }}
+name: 'Docker Image CI for GHCR'
+
+on:
+  push
+  
+jobs:
+  build_and_publish:
+    runs-on: unbuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and push the image
+        run: |
+          docker login  --username denglicc --password ${{ secrets.GH_PAT }}   ghcr.io
+          docker build . --tag ghcr.io/denglicc/hello-world-ghcr:v1 
+          docker push ghcr.io/denglicc/hello-world-ghcr:v1 
